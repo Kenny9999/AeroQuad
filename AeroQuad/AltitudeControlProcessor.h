@@ -69,24 +69,22 @@ void processVelocityHold()
 
 void processAltitudeControl()
 {
-  if (altitudeHoldState == ALTPANIC) {
-    return;
-  }
-  
-  if (altitudeHoldState == ALTITUDE_HOLD_STATE || altitudeHoldState == ALTITUDE_HOLD_STATE) {
+  if (altitudeHoldState == ALTITUDE_HOLD_STATE || altitudeHoldState == VELOCITY_HOLD_STATE) {
     if (abs(altitudeHoldThrottle - receiverCommand[receiverChannelMap[THROTTLE]]) > altitudeHoldPanicStickMovement) {
       altitudeHoldState = ALTPANIC; // too rapid of stick movement so PANIC out of ALTHOLD
-      return;
+    }
+	
+	if (altitudeHoldState == ALTITUDE_HOLD_STATE) {
+      processAltitudeHold();    
+    }
+    else if (altitudeHoldState == VELOCITY_HOLD_STATE){
+      processVelocityHold();
+    }
+	else { // ALTPANIC
+      throttle = receiverCommand[receiverChannelMap[THROTTLE]];
     }
   }
-
-  if (altitudeHoldState == ALTITUDE_HOLD_STATE) {
-    processAltitudeHold();    
-  }
-  else if (altitudeHoldState == VELOCITY_HOLD_STATE){
-    processVelocityHold();
-  }
-  else {
+  else { // OFF or ALTPANIC
     throttle = receiverCommand[receiverChannelMap[THROTTLE]];
   }
 }
