@@ -170,11 +170,11 @@ void reportVehicleState();
   #define VELOCITY_HOLD_STATE 2
   #define ALTPANIC 3
   byte altitudeHoldState = OFF;  // ON, OFF or ALTPANIC
-  int altitudeHoldBump = 90;
-  int altitudeHoldPanicStickMovement = 250;
+  int altitudeHoldBump = 30;
+  int altitudeHoldPanicStickMovement = 300;
   int altitudeHoldThrottle = 1000;
   boolean isAltitudeHoldInitialized = false;
-  boolean isVelocityHoldInitialisez = false;
+  boolean isVelocityHoldInitialized = false;
   
   float zVelocity = 0.0;
   float estimatedAltitude = 0.0;
