@@ -23,11 +23,11 @@
 #define _AEROQUAD_MAGNETOMETER_HMC58XX_H_
 
 #include "Compass.h"
+#include <SensorsStatus.h>
 
 #include "Arduino.h"
 
 #define COMPASS_ADDRESS 0x1E
-#define COMPASS_IDENTITY 0x10
 
 //#define SENSOR_GAIN 0x00  // +/- 0.7 Ga
 #define SENSOR_GAIN 0x20  // +/- 1.0 Ga (default)
@@ -42,19 +42,26 @@ void readSpecificMag(float *rawMag);
 
 
 void initializeMagnetometer() {
-
   delay(10);                             // Power up delay **
    
-  if (readWhoI2C(COMPASS_ADDRESS) == COMPASS_IDENTITY) {
-	  vehicleState |= MAG_DETECTED;
-  }    
+  sendByteI2C(COMPASS_ADDRESS, 10);
+  Wire.requestFrom(COMPASS_ADDRESS, 3);
+  if(Wire.available() == 3) {
+    byte id1 = Wire.receive();
+    byte id2 = Wire.receive();
+    byte id3 = Wire.receive();
+    if(id1 == 'H' && id2 == '4' && id3 == '3') {
+      vehicleState |= MAG_DETECTED;
+      
+	  updateRegisterI2C(COMPASS_ADDRESS, 0x01, SENSOR_GAIN); // Gain as defined above
+      delay(20);
 
-  updateRegisterI2C(COMPASS_ADDRESS, 0x01, SENSOR_GAIN); // Gain as defined above
-  delay(20);
-  updateRegisterI2C(COMPASS_ADDRESS, 0x02, 0x01); // start single conversion
-  delay(20);
+      updateRegisterI2C(COMPASS_ADDRESS, 0x02, 0x01); // start single conversion
+      delay(20);
 
-  measureMagnetometer(0.0, 0.0);  // Assume 1st measurement at 0 degrees roll and 0 degrees pitch
+      measureMagnetometer(0.0, 0.0);  // Assume 1st measurement at 0 degrees roll and 0 degrees pitch
+    }
+  }  
 }
 
 void measureMagnetometer(float roll, float pitch) {
@@ -69,7 +76,11 @@ void measureMagnetometer(float roll, float pitch) {
   measuredMagX = rawMag[XAXIS] + magBias[XAXIS];
   measuredMagY = rawMag[YAXIS] + magBias[YAXIS];
   measuredMagZ = rawMag[ZAXIS] + magBias[ZAXIS];
-
+  
+  measuredMag[XAXIS] = measuredMagX;
+  measuredMag[YAXIS] = measuredMagY;
+  measuredMag[ZAXIS] = measuredMagZ;
+  
   const float cosRoll =  cos(roll);
   const float sinRoll =  sin(roll);
   const float cosPitch = cos(pitch);
