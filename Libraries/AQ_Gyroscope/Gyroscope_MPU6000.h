@@ -78,9 +78,6 @@ void evaluateGyroRate() {
   processGyroCommon();
 }
 
-
-
-
 boolean calibrateGyro() {
   
   long findZero[3] = {0,0,0};

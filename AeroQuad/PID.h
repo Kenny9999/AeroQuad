@@ -46,10 +46,10 @@ enum {
 //// PID Variables
 struct PIDdata {
   float P, I, D;
-  float lastError;
-  // AKA experiments with PID
-  float previousPIDTime;
-  float integratedError;
+  double lastError;
+  int32_t previousPIDTime;
+  double integratedError;
+  double delta[2];
 } PID[LAST_PID_IDX];
 
 // This struct above declares the variable PID[] to hold each of the PID values for various functions
@@ -60,15 +60,16 @@ struct PIDdata {
 // ALTITUDE = 8 (used for altitude hold)
 // ZDAMPENING = 9 (used in altitude hold to dampen vertical accelerations)
 
-float updatePID(float targetPosition, float currentPosition, struct PIDdata *PIDparameters, float errorTreshold = 0) {
+float updatePID(double targetPosition, double currentPosition, struct PIDdata *PIDparameters, double errorTreshold = 0) {
 
-  const float deltaPIDTime = (currentTime - PIDparameters->previousPIDTime) / 1000000.0;
-
-  PIDparameters->previousPIDTime = currentTime;  // AKA PID experiments
-  float error = targetPosition - currentPosition;
+  unsigned long currentPidTime = micros();
+  const double deltaPIDTime = (currentPidTime - PIDparameters->previousPIDTime) / 1000000.0;
+  PIDparameters->previousPIDTime = currentPidTime;  // AKA PID experiments
+  
+  const double error = targetPosition - currentPosition;
 
   if (inFlight) {
-    PIDparameters->integratedError += error * deltaPIDTime;
+    PIDparameters->integratedError += (error * deltaPIDTime);
     if (errorTreshold != 0) {
       PIDparameters->integratedError = constrain(PIDparameters->integratedError, -errorTreshold, errorTreshold);
     }
@@ -76,35 +77,17 @@ float updatePID(float targetPosition, float currentPosition, struct PIDdata *PID
   else {
     PIDparameters->integratedError = 0.0;
   }
-  float dTerm = PIDparameters->D * (currentPosition - PIDparameters->lastError) / (deltaPIDTime * 100); // dT fix from Honk
-  PIDparameters->lastError = currentPosition;
+  
+  double delta = currentPosition - PIDparameters->lastError;
+  double deltaSum = PIDparameters->delta[1] + PIDparameters->delta[0] + delta;
+  PIDparameters->delta[1] = PIDparameters->delta[0];
+  PIDparameters->delta[0] = delta;
 
+  double dTerm = -PIDparameters->D * (deltaSum) / (deltaPIDTime * 100); // dT fix from Honk
+  PIDparameters->lastError = currentPosition;
+  
   return (PIDparameters->P * error) + (PIDparameters->I * PIDparameters->integratedError) + dTerm;
 }
-
-
-//float updatePIDDerivativeBaseRate(float targetPosition, float currentPosition, struct PIDdata *PIDparameters) {
-//
-//  // AKA PID experiments
-//  const float deltaPIDTime = (currentTime - PIDparameters->previousPIDTime) / 1000000.0;
-//
-//  PIDparameters->previousPIDTime = currentTime;  // AKA PID experiments
-//  float error = targetPosition - currentPosition;
-//
-//  if (inFlight) {
-//    PIDparameters->integratedError += error * deltaPIDTime;
-//  }
-//  else {
-//    PIDparameters->integratedError = 0.0;
-//  }
-//  float cptr[3] = {0.0,0.0,0.0};
-//  cptr[0] = PIDparameters->P * error;
-//  cptr[1] = PIDparameters->I * PIDparameters->integratedError;
-//  cptr[2] = PIDparameters->D * (targetPosition - PIDparameters->lastError) / (deltaPIDTime * 100); // dT fix from Honk
-//  PIDparameters->lastError = targetPosition;
-//
-//  return cptr[0] + cptr[1] + cptr[2];
-//}
 
 
 void zeroIntegralError() __attribute__ ((noinline));

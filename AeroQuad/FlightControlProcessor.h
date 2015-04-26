@@ -105,6 +105,10 @@ void calculateFlightError()
   
   motorAxisCommandRoll = updatePID(gyroDesiredRollRate, gyroADCData[XAXIS], &PID[RATE_XAXIS_PID_IDX]);
   motorAxisCommandPitch = updatePID(gyroDesiredPitchRate, -gyroADCData[YAXIS], &PID[RATE_YAXIS_PID_IDX]);
+
+//  PID[RATE_XAXIS_PID_IDX].D = 0.0001;
+//  motorAxisCommandRoll = updatePID(0, gyroADCData[XAXIS], &PID[RATE_XAXIS_PID_IDX]);
+//  Serial.print(gyroADCData[XAXIS]);Serial.print(" ");Serial.println(motorAxisCommandRoll);
 }
 
 /**

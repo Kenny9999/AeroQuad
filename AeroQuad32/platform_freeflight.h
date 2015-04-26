@@ -90,7 +90,6 @@ void initializePlatformSpecificAccelCalibration() {
 
 unsigned long previousMeasureCriticalSensorsTime = 0;
 unsigned long measureCriticalSensorsTime = 0;
-
 void measureCriticalSensors() {
   measureCriticalSensorsTime = micros();
   readMPU6000Sensors();

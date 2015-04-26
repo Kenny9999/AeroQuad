@@ -271,12 +271,12 @@ void readSerialCommand() {
 //***************************************************************************************************
 
 void PrintValueComma(float val) {
-  SERIAL_PRINT(val,3);
+  SERIAL_PRINT(val,4);
   comma();
 }
 
 void PrintValueComma(double val) {
-  SERIAL_PRINT(val,3);
+  SERIAL_PRINT(val,4);
   comma();
 }
 
@@ -390,7 +390,7 @@ void sendSerialTelemetry() {
         PrintValueComma(gyroRate[axis]);
       }
       for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
-        PrintValueComma(filteredAccel[axis]);
+        PrintValueComma(meterPerSecSec[axis]);
       }
       for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
         #if defined(HeadingMagHold)

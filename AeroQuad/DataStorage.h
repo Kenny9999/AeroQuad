@@ -122,12 +122,12 @@ void nvrWritePID(unsigned char IDPid, unsigned int IDEeprom) {
 
 // contains all default values when re-writing EEPROM
 void initializeEEPROM() {
-  PID[RATE_XAXIS_PID_IDX].P = 0.1;
+  PID[RATE_XAXIS_PID_IDX].P = 0.15;
   PID[RATE_XAXIS_PID_IDX].I = 0.01;
-  PID[RATE_XAXIS_PID_IDX].D = -0.35;
-  PID[RATE_YAXIS_PID_IDX].P = 0.1;
+  PID[RATE_XAXIS_PID_IDX].D = 0.2;
+  PID[RATE_YAXIS_PID_IDX].P = 0.15;
   PID[RATE_YAXIS_PID_IDX].I = 0.01;
-  PID[RATE_YAXIS_PID_IDX].D = -0.35;
+  PID[RATE_YAXIS_PID_IDX].D = 0.2;
   PID[ATTITUDE_XAXIS_PID_IDX].P = 4.0;
   PID[ATTITUDE_XAXIS_PID_IDX].I = 0.0;
   PID[ATTITUDE_XAXIS_PID_IDX].D = 0.0;
