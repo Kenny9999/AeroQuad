@@ -48,7 +48,8 @@ void measureAccelSum() {
 
 void evaluateMetersPerSec() {
   for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
-    meterPerSecSec[axis] = (((previousPreviousAccelSample[axis] + previousAccelSample[axis] + accelSample[axis])/3) / accelSampleCount * accelScaleFactor[axis]) + runTimeAccelBias[axis];
+	accelADC[axis] = ((previousPreviousAccelSample[axis] + previousAccelSample[axis] + accelSample[axis])/3) / accelSampleCount;
+    meterPerSecSec[axis] = (accelADC[axis] * accelScaleFactor[axis]) + runTimeAccelBias[axis];
 	previousPreviousAccelSample[axis] = previousAccelSample[axis];
 	previousAccelSample[axis] = accelSample[axis];
   	accelSample[axis] = 0;

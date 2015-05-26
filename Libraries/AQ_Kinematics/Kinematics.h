@@ -23,42 +23,40 @@
 
 #include "GlobalDefined.h"
 
-double halfT = 0.0;                		
-double q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;
-double previousEx = 0.0;
-double previousEy = 0.0;
-double previousEz = 0.0;
+float halfT = 0.0;                		
+float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;
+float previousEx = 0.0;
+float previousEy = 0.0;
+float previousEz = 0.0;
 
 
 // This class is responsible for calculating vehicle attitude
 unsigned long kinematicPreviousTime = 0;
 byte kinematicsType = 0;
-double kinematicsAngle[3] = {0.0,0.0,0.0};
-double correctedRateVector[3] = {0.0,0.0,0.0};
-double earthAccel[3] = {0.0,0.0,0.0};
+float kinematicsAngle[3] = {0.0,0.0,0.0};
+float correctedRateVector[3] = {0.0,0.0,0.0};
+float earthAccel[3] = {0.0,0.0,0.0};
 
-double kinematicCorrectedAccel[3] = { 0.0, 0.0, 0.0 };
+float kinematicCorrectedAccel[3] = {0.0, 0.0, 0.0};
 
 #define HardFilter(O,N)  ((O)*0.9f+(N)*0.1f)
 
-#define DEFAULT_Kp 0.02 // 0.2
-#define DEFAULT_Ki 0.0005 // 0.0005
+#define DEFAULT_Kp 0.02 //0.02 // 0.2
+#define DEFAULT_Ki 0.0005 //0.0005 // 0.0005
 
 
-/*double accConfidence      = 1.0f;
-double accConfidenceDecay = 1.0f / sqrt(0.6f);	// @todo, accelCutOff should go into eeprom... if it work
+float accConfidenceDecay = 0.0f;
+float accConfidence      = 1.0f;
 
-void calculateAccConfidence(double accMag)
+
+void calculateAccConfidence(float accMag)
 {
-	// G.K. Egan (C) computes confidence in accelerometers when
-	// aircraft is being accelerated over and above that due to gravity
-	static double accMagP = 1.0f;
+	static float accMagP = 1.0f;
 	accMag /= accelOneG;  // HJI Added to convert MPS^2 to G's
 	accMag  = HardFilter(accMagP, accMag );
 	accMagP = accMag;
 	accConfidence = constrain(1.0 - (accConfidenceDecay * sqrt(fabs(accMag - 1.0f))), 0.0f, 1.0f);
 }
-*/
 
 void initializeBaseKinematicParam() {
 
@@ -68,9 +66,9 @@ void initializeBaseKinematicParam() {
 }
 	
 
-const double kinematicsGetDegreesHeading(byte axis) {
+const float kinematicsGetDegreesHeading(byte axis) {
     
-  double tDegrees = degrees(kinematicsAngle[axis]);
+  float tDegrees = degrees(kinematicsAngle[axis]);
   if (tDegrees < 0.0) {
     return (tDegrees + 360.0);
   }

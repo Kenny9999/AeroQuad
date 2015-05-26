@@ -52,39 +52,39 @@
 #include <AQMath.h>
 
 
-double exInt = 0.0, eyInt = 0.0, ezInt = 0.0;  		// scaled integral error
-double Kp, Ki;  
+float exInt = 0.0, eyInt = 0.0, ezInt = 0.0;  		// scaled integral error
+float Kp, Ki;  
 
 ////////////////////////////////////////////////////////////////////////////////
 // argUpdate
 ////////////////////////////////////////////////////////////////////////////////
-void calculateKinematicsAGR(double gx, double gy, double gz, double ax, double ay, double az) {
+void calculateKinematicsAGR(float gx, float gy, float gz, float ax, float ay, float az) {
   
   unsigned long currentKinematicTime = micros();
-  double dt = (currentKinematicTime - kinematicPreviousTime) / 1000000.0;
+  float dt = (currentKinematicTime - kinematicPreviousTime) / 1000000.0;
   kinematicPreviousTime = currentKinematicTime;
   
   halfT = dt / 2.0;
   
   // normalise the measurements
-  double norm = sqrt(ax*ax + ay*ay + az*az);       
-//  calculateAccConfidence(norm);
-  Kp = DEFAULT_Kp;// * accConfidence;
-  Ki = DEFAULT_Ki;// * accConfidence;
+  float norm = sqrt(ax*ax + ay*ay + az*az);       
+  calculateAccConfidence(norm);
+  Kp = DEFAULT_Kp * accConfidence;
+  Ki = DEFAULT_Ki * accConfidence;
 	
   ax = ax / norm;
   ay = ay / norm;
   az = az / norm;
      	
   // estimated direction of gravity and flux (v and w)
-  double vx = 2*(q1*q3 - q0*q2);
-  double vy = 2*(q0*q1 + q2*q3);
-  double vz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+  float vx = 2*(q1*q3 - q0*q2);
+  float vy = 2*(q0*q1 + q2*q3);
+  float vz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
     
   // error is sum of cross product between reference direction of fields and direction measured by sensors
-  double ex = (vy*az - vz*ay);
-  double ey = (vz*ax - vx*az);
-  double ez = (vx*ay - vy*ax);
+  float ex = (vy*az - vz*ay);
+  float ey = (vz*ax - vx*az);
+  float ez = (vx*ay - vy*ax);
     
   // integral error scaled integral gain
   exInt = exInt + ex*Ki;

@@ -80,9 +80,9 @@ void processAltitudeControl()
   }
   else {
     throttle = receiverCommand[receiverChannelMap[THROTTLE]];
-    if (throttle > 1850)
+    if (throttle > MAX_USER_THROTTLE)
     {
-      throttle = 1850;
+      throttle = MAX_USER_THROTTLE;
     }
   }
 }

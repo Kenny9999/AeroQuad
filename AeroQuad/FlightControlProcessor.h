@@ -27,13 +27,13 @@
 
 
 #if defined (USE_TPA_ADJUSTMENT)
-  #define TPA_THROTTLE 800.0
+  #define TPA_THROTTLE MAX_USER_THROTTLE - 1000.0
   void processThrottlePIDAdjustment() 
   {
     if (!inFlight) {
       return;
     }
-    float throttleAdjustmentPercentage = TPA_THROTTLE - (2000 - receiverCommand[receiverChannelMap[THROTTLE]]);
+    float throttleAdjustmentPercentage = TPA_THROTTLE - (MAX_USER_THROTTLE - receiverCommand[receiverChannelMap[THROTTLE]]);
     throttleAdjustmentPercentage = throttleAdjustmentPercentage < 0 ? 0 : throttleAdjustmentPercentage;
     const float pidPercentToRemove = map(throttleAdjustmentPercentage, 0.0, TPA_THROTTLE, 0.0, throttlePIDAdjustmentFactor);
     
@@ -105,10 +105,9 @@ void calculateFlightError()
   
   motorAxisCommandRoll = updatePID(gyroDesiredRollRate, gyroADCData[XAXIS], &PID[RATE_XAXIS_PID_IDX]);
   motorAxisCommandPitch = updatePID(gyroDesiredPitchRate, -gyroADCData[YAXIS], &PID[RATE_YAXIS_PID_IDX]);
-
-//  PID[RATE_XAXIS_PID_IDX].D = 0.0001;
-//  motorAxisCommandRoll = updatePID(0, gyroADCData[XAXIS], &PID[RATE_XAXIS_PID_IDX]);
-//  Serial.print(gyroADCData[XAXIS]);Serial.print(" ");Serial.println(motorAxisCommandRoll);
+  
+//  Serial.print(PID[RATE_XAXIS_PID_IDX].integratedError);Serial.print(" ");
+//  Serial.println(PID[RATE_YAXIS_PID_IDX].integratedError);
 }
 
 /**

@@ -71,13 +71,12 @@ float G_Dt = 0.002;
 int throttle = 1000;
 byte motorArmed = OFF;
 byte safetyCheck = OFF;
-byte maxLimit = OFF;
-byte minLimit = OFF;
-double filteredAccel[3] = {0.0,0.0,0.0};
-//byte fastTaskGyroRateSampleCount = 0;
+byte fastTaskGyroRateSampleCount = 0;
+double fastTaskGyroRateSample[3] = {0.0,0.0,0.0};
 boolean inFlight = false; // true when motor are armed and that the user pass one time the min throttle
 float rotationSpeedFactor = 2.5;
 float yawSpeedFactor = 2.5;
+#define MAX_USER_THROTTLE 1800
 
 #if defined (USE_TPA_ADJUSTMENT)
   float userRateRollP = 0.0;
@@ -94,7 +93,7 @@ int throttlePIDAdjustmentFactor = 0;
   
   
 unsigned long fastTaskPreviousTime = 0;
-int fastLoopSleepingDelay = 2500;
+int loopTimeMicros = 2500;
 
 // main loop time variable
 unsigned long previousTime = 0;
@@ -263,6 +262,7 @@ typedef struct {
   float MINARMEDTHROTTLE_ADR;
   float FLIGHTMODE_ADR;
   float ACCEL_1G_ADR;
+  float ACCEL_CUT_OFF_ADR;
   
   // Gyro calibration
   float ROTATION_SPEED_FACTOR_ARD;
@@ -280,7 +280,7 @@ typedef struct {
   float RECEIVER_CHANNEL_MAP_ADR[MAX_NB_CHANNEL];
   long YAW_DIRECTION_ADR;
   long FLIGHT_CONFIG_TYPE;
-  long FAST_LOOP_SLEEPING_DELAY;
+  long LOOP_TIME_DELAY;
   
   // Mag Calibration
   #if defined (HeadingMagHold)

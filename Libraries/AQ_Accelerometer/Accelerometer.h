@@ -26,10 +26,11 @@
 
 #define SAMPLECOUNT 400.0
 
-float accelScaleFactor[3] = {0.0,0.0,0.0};
-float runTimeAccelBias[3] = {0, 0, 0};
-float accelOneG = 0.0;
-float meterPerSecSec[3] = {0.0,0.0,0.0};
+double accelScaleFactor[3] = {0.0,0.0,0.0};
+double runTimeAccelBias[3] = {0, 0, 0};
+double accelOneG = 0.0;
+double meterPerSecSec[3] = {0.0,0.0,0.0};
+long accelADC[3] = {0,0,0};
 long accelSample[3] = {0,0,0};
 long previousAccelSample[3] = {0,0,0};
 long previousPreviousAccelSample[3] = {0,0,0};

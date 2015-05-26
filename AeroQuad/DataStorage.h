@@ -151,7 +151,7 @@ void initializeEEPROM() {
   }
   yawDirection = 1;
   flightConfigType = QUAD_X;
-  fastLoopSleepingDelay = 2500;
+  loopTimeMicros = 2500;
   
   accelScaleFactor[XAXIS] = 1.0;
   runTimeAccelBias[XAXIS] = 0;
@@ -189,6 +189,7 @@ void initializeEEPROM() {
   minArmedThrottle = 1150;
   // AKA - old setOneG not in SI - accel->setOneG(500);
   accelOneG = -9.80665; // AKA set one G to 9.8 m/s^2
+  accConfidenceDecay = 0.0f;
   for (byte channel = XAXIS; channel < LAST_CHANNEL; channel++) {
     receiverMinValue[channel] = 1000;
     receiverMaxValue[channel] = 2000;
@@ -272,7 +273,7 @@ void readEEPROM() {
   }
   yawDirection = readLong(YAW_DIRECTION_ADR);
   flightConfigType = readLong(FLIGHT_CONFIG_TYPE);
-  fastLoopSleepingDelay = readLong(FAST_LOOP_SLEEPING_DELAY);
+  loopTimeMicros = readLong(LOOP_TIME_DELAY);
 
   
   // Leaving separate PID reads as commented for now
@@ -305,6 +306,7 @@ void readEEPROM() {
   minArmedThrottle = readFloat(MINARMEDTHROTTLE_ADR);
   flightMode = readFloat(FLIGHTMODE_ADR);
   accelOneG = readFloat(ACCEL_1G_ADR);
+  accConfidenceDecay = readFloat(ACCEL_CUT_OFF_ADR);
 
   #if defined (UseGPS)
     isGpsEnabled = readFloat(GPS_ENABLED_ADR);
@@ -364,7 +366,7 @@ void writeEEPROM(){
   }
   writeLong(yawDirection, YAW_DIRECTION_ADR);
   writeLong(flightConfigType, FLIGHT_CONFIG_TYPE);
-  writeLong(fastLoopSleepingDelay, FAST_LOOP_SLEEPING_DELAY);
+  writeLong(loopTimeMicros, LOOP_TIME_DELAY);
   
   #if defined AltitudeHoldBaro
     writePID(BARO_ALTITUDE_HOLD_PID_IDX, ALTITUDE_PID_GAIN_ADR);
@@ -391,6 +393,7 @@ void writeEEPROM(){
   writeFloat(minArmedThrottle, MINARMEDTHROTTLE_ADR);
   writeFloat(flightMode, FLIGHTMODE_ADR);
   writeFloat(accelOneG, ACCEL_1G_ADR);
+  writeFloat(accConfidenceDecay, ACCEL_CUT_OFF_ADR);
   writeFloat(SOFTWARE_VERSION, SOFTWARE_VERSION_ADR);
   
   // Battery Monitor

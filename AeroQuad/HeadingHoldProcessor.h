@@ -23,46 +23,8 @@
 #define _AQ_HEADING_CONTROL_PROCESSOR_H_
 
 
-//float setHeading = 0;
-
 void processHeading()
 {
-//  heading = degrees(gyroHeading);
-//
-//  relativeHeading = heading - setHeading;
-//  if (heading <= (setHeading - 180)) {
-//    relativeHeading += 360;
-//  }
-//  else if (heading >= (setHeading + 180)) {
-//    relativeHeading -= 360;
-//  }
-//  
-//  if (inFlight) { 
-//    
-//    if ((receiverCommand[receiverChannelMap[ZAXIS]] > (MIDCOMMAND + 25)) || 
-//        (receiverCommand[receiverChannelMap[ZAXIS]] < (MIDCOMMAND - 25))) {
-//      
-//      setHeading = heading;
-//      headingHold = 0;
-//      PID[HEADING_HOLD_PID_IDX].integratedError = 0;
-//    }
-//    else {
-//      headingHold = updatePID(0, relativeHeading, &PID[HEADING_HOLD_PID_IDX]);
-//    }
-//  }
-//  else {
-//    setHeading = heading;
-//    headingHold = 0;
-//    PID[HEADING_HOLD_PID_IDX].integratedError = 0;
-//  }
-//
-//  const float receiverSiData = (receiverCommand[receiverChannelMap[ZAXIS]] - 1500) * (2.5 * PWM2RAD);
-//  const float commandedYaw = constrain(receiverSiData + radians(headingHold), -PI, PI);
-////  Serial.println(headingHold);
-//  motorAxisCommandYaw = updatePID(commandedYaw, gyroRate[ZAXIS], &PID[ZAXIS_PID_IDX]);
-//  Serial.println(motorAxisCommandYaw);
-
-
   if (!inFlight) {
     PID[ZAXIS_PID_IDX].integratedError = 0;
   }  

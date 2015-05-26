@@ -728,9 +728,10 @@
 #include "Kinematics.h"
 #if defined(HeadingMagHold)
   #include "Kinematics_MARG.h"
-  #include "Kinematics_ARG.h"
+//  #include "Kinematics_ARG.h"
 #else
   #include "Kinematics_ARG.h"
+//  #include "Kinematics_MWII.h"
 #endif
 
 
@@ -902,7 +903,7 @@ void setup() {
   
   initPlatform();
   #ifdef AeroQuadSTM32
-    PWM_FREQUENCY = fastLoopSleepingDelay == 2000 ? 500 : 400;
+    PWM_FREQUENCY = 1000 / (loopTimeMicros/1000.0);// == 2000 ? 500 : 400;
   #endif
   initializeMotors(LASTMOTOR);
   (*initializeReceiver[receiverTypeUsed])();
@@ -990,21 +991,13 @@ void setup() {
  ******************************************************************/
 void computerKinematics() {
   
-//  for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
-//    gyroRate[axis] = fastTaskGyroRateSample[axis] / fastTaskGyroRateSampleCount;
-//    fastTaskGyroRateSample[axis] = 0.0;
-//  }
-//  fastTaskGyroRateSampleCount = 0;
-
-
-
   evaluateMetersPerSec();
   
-//  for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
-//    filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
-//    filteredAccel[axis] = filterSmooth(meterPerSecSec[axis], filteredAccel[axis], 0.8);
-//  }
-
+  for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
+    gyroRate[axis] = fastTaskGyroRateSample[axis] / fastTaskGyroRateSampleCount;
+    fastTaskGyroRateSample[axis] = 0.0;
+  }
+  fastTaskGyroRateSampleCount = 0;
 
   #if defined (HeadingMagHold) 
     calculateKinematicsMAGR(gyroRate[XAXIS], 
@@ -1024,23 +1017,31 @@ void computerKinematics() {
                            meterPerSecSec[XAXIS], 
                            meterPerSecSec[YAXIS], 
                            meterPerSecSec[ZAXIS]);
-  #endif
+                           
+//    calculateKinematicsMWII(gyroRate[XAXIS], 
+//                           gyroRate[YAXIS], 
+//                           gyroRate[ZAXIS], 
+//                           meterPerSecSec[XAXIS], 
+//                           meterPerSecSec[YAXIS], 
+//                           meterPerSecSec[ZAXIS]);
 
+  #endif
 }
 
 /*******************************************************************
- * Fast task 500Hz or 400hz or 100Hz user selectable
+ * Fast task 
  ******************************************************************/
 void processFastTask() {
+  
   G_Dt = (currentTime - fastTaskPreviousTime) / 1000000.0;
   fastTaskPreviousTime = currentTime;
 
   evaluateGyroRate();    
-//  for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
-//    fastTaskGyroRateSample[axis] += gyroRate[axis];
-//  }
-//  fastTaskGyroRateSampleCount++;
-  
+  for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
+    fastTaskGyroRateSample[axis] += gyroRate[axis];
+  }
+  fastTaskGyroRateSampleCount++;
+
   processFlightControl();
 }
 
@@ -1208,12 +1209,12 @@ void loop () {
   currentTime = micros();
   deltaTime = currentTime - previousTime;
 
-  
   measureCriticalSensors();
   
-  if (currentTime >= (fastTaskPreviousTime + fastLoopSleepingDelay)) {  // 2500 = 400Hz, 2000 = 500Hz, 10000 = 100Hz
+  if ((currentTime >= (fastTaskPreviousTime + loopTimeMicros)) && (gyroSampleCount > 0)) {  // 2500 = 400Hz, 2000 = 500Hz, 10000 = 100Hz
     processFastTask();
   }
+  
 
   // ================================================================
   // 100Hz task loop

@@ -69,6 +69,9 @@ void readSerialCommand() {
   // Check for serial message
   if (SERIAL_AVAILABLE()) {
     serialQueryType = SERIAL_READ();
+    if (inFlight) { // little hack til I find the bug with the OSD damn it
+      return;
+    }
     switch (serialQueryType) {
     case 'A': // Receive roll and pitch rate mode PID
       readSerialPID(RATE_XAXIS_PID_IDX);
@@ -90,6 +93,7 @@ void readSerialCommand() {
     case 'B': // Receive roll/pitch attitude mode PID
       readSerialPID(ATTITUDE_XAXIS_PID_IDX);
       readSerialPID(ATTITUDE_YAXIS_PID_IDX);
+      accConfidenceDecay = readFloatSerial();
       writeEEPROM();
       break;
 
@@ -243,7 +247,7 @@ void readSerialCommand() {
       #else
         readFloatSerial();
       #endif
-      fastLoopSleepingDelay = readFloatSerial();
+      loopTimeMicros = readFloatSerial();
       writeEEPROM();
       break;
 
@@ -271,12 +275,12 @@ void readSerialCommand() {
 //***************************************************************************************************
 
 void PrintValueComma(float val) {
-  SERIAL_PRINT(val,4);
+  SERIAL_PRINT(val,3);
   comma();
 }
 
 void PrintValueComma(double val) {
-  SERIAL_PRINT(val,4);
+  SERIAL_PRINT(val,3);
   comma();
 }
 
@@ -351,6 +355,7 @@ void sendSerialTelemetry() {
     case 'b': // Send roll and pitch attitude mode PID values
       PrintPID(ATTITUDE_XAXIS_PID_IDX);
       PrintPID(ATTITUDE_YAXIS_PID_IDX);
+      PrintValueComma(accConfidenceDecay);
       SERIAL_PRINTLN(0);
       serialQueryType = 'X';
       break;
@@ -712,7 +717,7 @@ void reportVehicleState() {
   SERIAL_PRINT(";");
 
   SERIAL_PRINT("EscUpdateSpeed: ");
-  SERIAL_PRINT(fastLoopSleepingDelay);
+  SERIAL_PRINT(loopTimeMicros);
   SERIAL_PRINT(";");
 
   SERIAL_PRINTLN();

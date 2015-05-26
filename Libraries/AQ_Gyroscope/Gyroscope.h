@@ -26,14 +26,14 @@
 
 #define FINDZERO 512
 
-int32_t gyroADCData[3] = {0,0,0};
-int32_t gyroADC[3] = {0,0,0};
-int32_t previousGyroADC[3] = {0,0,0};
-int32_t seccondPreviousGyroADC[3] = {0,0,0};
+long gyroADCData[3] = {0,0,0};
+long gyroADC[3] = {0,0,0};
+long previousGyroADC[3] = {0,0,0};
+long seccondPreviousGyroADC[3] = {0,0,0};
 
 double gyroRate[3] = {0.0,0.0,0.0};
-int32_t  gyroZero[3] = {0,0,0};
-int32_t  gyroSample[3] = {0,0,0};
+long  gyroZero[3] = {0,0,0};
+long  gyroSample[3] = {0,0,0};
 double gyroScaleFactor = 0.0;
 double gyroOneMeterSecADCFactor = 0.0;
 double gyroHeading = 0.0;

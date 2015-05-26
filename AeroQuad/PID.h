@@ -47,7 +47,7 @@ enum {
 struct PIDdata {
   float P, I, D;
   double lastError;
-  int32_t previousPIDTime;
+  unsigned long previousPIDTime;
   double integratedError;
   double delta[2];
 } PID[LAST_PID_IDX];
